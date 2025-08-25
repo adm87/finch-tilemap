@@ -25,6 +25,18 @@ func Cache() *TilesetCache {
 	return cacheInstance
 }
 
+func (c *TilesetCache) Get(key string) (*Tileset, error) {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+
+	tileset, err := c.store.Get(key)
+	if err != nil {
+		return nil, err
+	}
+
+	return tileset, nil
+}
+
 func (c *TilesetCache) Allocate(key string, data []byte) error {
 	var tileset *Tileset
 

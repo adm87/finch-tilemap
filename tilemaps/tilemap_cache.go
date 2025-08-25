@@ -3,6 +3,7 @@ package tilemaps
 import (
 	"sync"
 
+	"github.com/adm87/finch-core/linq"
 	"github.com/adm87/finch-core/types"
 	"github.com/adm87/finch-resources/storage"
 	"gopkg.in/yaml.v3"
@@ -49,6 +50,12 @@ func (c *TilemapCache) Allocate(key string, data []byte) error {
 
 	if err := c.store.Add(key, tilemap); err != nil {
 		return err
+	}
+
+	tilemap.IsDirty = true
+	if len(tilemap.Data) == 0 {
+		tilemap.Data = make([]int, tilemap.Rows*tilemap.Columns)
+		linq.Fill(tilemap.Data, -1)
 	}
 
 	return nil
