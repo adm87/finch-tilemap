@@ -1,16 +1,16 @@
 package tilesets
 
 type Tileset struct {
-	ImageID  string         `yaml:"image_id"`
-	Rows     int            `yaml:"rows"`
-	Columns  int            `yaml:"columns"`
-	TileSize int            `yaml:"tile_size"`
-	Padding  TilesetPadding `yaml:"padding"`
+	ImageID  string         `json:"image_id"`
+	Rows     int            `json:"rows"`
+	Columns  int            `json:"columns"`
+	TileSize int            `json:"tile_size"`
+	Padding  TilesetPadding `json:"padding"`
 }
 
 type TilesetPadding struct {
-	Top    int `yaml:"top"`
-	Right  int `yaml:"right"`
-	Bottom int `yaml:"bottom"`
-	Left   int `yaml:"left"`
+	Top    int `json:"top"`
+	Right  int `json:"right"`
+	Bottom int `json:"bottom"`
+	Left   int `json:"left"`
 }

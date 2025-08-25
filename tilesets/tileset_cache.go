@@ -1,11 +1,11 @@
 package tilesets
 
 import (
+	"encoding/json"
 	"sync"
 
 	"github.com/adm87/finch-core/types"
 	"github.com/adm87/finch-resources/storage"
-	"gopkg.in/yaml.v3"
 )
 
 var (
@@ -40,7 +40,7 @@ func (c *TilesetCache) Get(key string) (*Tileset, error) {
 func (c *TilesetCache) Allocate(key string, data []byte) error {
 	var tileset *Tileset
 
-	if err := yaml.Unmarshal(data, &tileset); err != nil {
+	if err := json.Unmarshal(data, &tileset); err != nil {
 		return err
 	}
 

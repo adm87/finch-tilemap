@@ -1,9 +1,9 @@
 package tilemaps
 
 type Tilemap struct {
-	IsDirty   bool   `yaml:"-"`
-	Rows      int    `yaml:"rows"`
-	Columns   int    `yaml:"columns"`
-	Data      []int  `yaml:"data"`
-	TilesetID string `yaml:"tileset_id"`
+	IsDirty   bool   `json:"-"`
+	Rows      int    `json:"rows"`
+	Columns   int    `json:"columns"`
+	Data      []int  `json:"data"`
+	TilesetID string `json:"tileset_id"`
 }

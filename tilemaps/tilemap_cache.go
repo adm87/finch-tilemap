@@ -1,12 +1,12 @@
 package tilemaps
 
 import (
+	"encoding/json"
 	"sync"
 
 	"github.com/adm87/finch-core/linq"
 	"github.com/adm87/finch-core/types"
 	"github.com/adm87/finch-resources/storage"
-	"gopkg.in/yaml.v3"
 )
 
 var (
@@ -41,7 +41,7 @@ func (c *TilemapCache) Get(key string) (*Tilemap, error) {
 func (c *TilemapCache) Allocate(key string, data []byte) error {
 	var tilemap *Tilemap
 
-	if err := yaml.Unmarshal(data, &tilemap); err != nil {
+	if err := json.Unmarshal(data, &tilemap); err != nil {
 		return err
 	}
 
