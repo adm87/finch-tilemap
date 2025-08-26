@@ -19,23 +19,25 @@ func TilemapRenderer(world *ecs.World, entity ecs.Entity) (rendering.RenderingTa
 	if err != nil {
 		return nil, 0, err
 	}
-	tileset, err := tilesets.Cache().Get(tilemap.TilesetID)
-	if err != nil {
-		return nil, 0, err
-	}
+
 	tilemapBuffer, exists := get_tilemap_buffer(tilemapComp.TilemapID)
-	if !exists {
-		tilemapBuffer = new_tilemap_buffer(tilemapComp.TilemapID, tilemap.Rows*tileset.TileSize, tilemap.Columns*tileset.TileSize)
-	}
-	tilesetImg, err := images.Cache().Get(tileset.ImageID)
-	if err != nil {
-		return nil, 0, err
-	}
-	if tilemap.IsDirty {
+	if !exists || tilemap.IsDirty {
+		tileset, err := tilesets.Cache().Get(tilemap.TilesetID)
+		if err != nil {
+			return nil, 0, err
+		}
+		if !exists {
+			tilemapBuffer = new_tilemap_buffer(tilemapComp.TilemapID, tilemap.Rows*tileset.TileSize, tilemap.Columns*tileset.TileSize)
+		}
+		tilesetImg, err := images.Cache().Get(tileset.ImageID)
+		if err != nil {
+			return nil, 0, err
+		}
 		if err := draw_tilemap(tilemapBuffer, tilesetImg, tilemap, tileset); err != nil {
 			return nil, 0, err
 		}
 	}
+
 	return func(surface *ebiten.Image, view ebiten.GeoM) {
 		op.GeoM.Reset()
 		if transformComp, ok, _ := ecs.GetComponent[*transform.TransformComponent](world, entity, transform.TransformComponentType); ok {
