@@ -7,14 +7,18 @@ import (
 var TilemapComponentType = ecs.NewComponentType[*TilemapComponent]()
 
 type TilemapComponent struct {
-	ZOrder    int
 	TilemapID string
 }
 
-func NewTilemapComponent(tilemapID string, zOrder int) *TilemapComponent {
+func NewTilemapComponent(tilemapID string) *TilemapComponent {
 	return &TilemapComponent{
-		ZOrder:    zOrder,
 		TilemapID: tilemapID,
+	}
+}
+
+func NewEmptyTilemapComponent() *TilemapComponent {
+	return &TilemapComponent{
+		TilemapID: "",
 	}
 }
 

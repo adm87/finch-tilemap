@@ -15,6 +15,12 @@ var op = &ebiten.DrawImageOptions{}
 
 func TilemapRenderer(world *ecs.World, entity ecs.Entity) (rendering.RenderingTask, int, error) {
 	tilemapComp, _, _ := ecs.GetComponent[*TilemapComponent](world, entity, TilemapComponentType)
+	tilemapRend, _, _ := ecs.GetComponent[*TilemapRenderComponent](world, entity, TilemapRenderComponentType)
+
+	if tilemapComp.TilemapID == "" {
+		return nil, 0, nil
+	}
+
 	tilemap, err := Cache().Get(tilemapComp.TilemapID)
 	if err != nil {
 		return nil, 0, err
@@ -27,7 +33,7 @@ func TilemapRenderer(world *ecs.World, entity ecs.Entity) (rendering.RenderingTa
 			return nil, 0, err
 		}
 		if !exists {
-			tilemapBuffer = new_tilemap_buffer(tilemapComp.TilemapID, tilemap.Rows*tileset.TileSize, tilemap.Columns*tileset.TileSize)
+			tilemapBuffer = new_tilemap_buffer(tilemapComp.TilemapID, tilemap.Columns*tileset.TileSize, tilemap.Rows*tileset.TileSize)
 		}
 		tilesetImg, err := images.Cache().Get(tileset.ImageID)
 		if err != nil {
@@ -45,7 +51,7 @@ func TilemapRenderer(world *ecs.World, entity ecs.Entity) (rendering.RenderingTa
 		}
 		op.GeoM.Concat(view)
 		surface.DrawImage(tilemapBuffer, op)
-	}, tilemapComp.ZOrder, nil
+	}, tilemapRend.ZOrder, nil
 }
 
 func draw_tilemap(buffer *ebiten.Image, palette *ebiten.Image, tilemap *Tilemap, tileset *tilesets.Tileset) error {
@@ -54,27 +60,27 @@ func draw_tilemap(buffer *ebiten.Image, palette *ebiten.Image, tilemap *Tilemap,
 	tsw := tileset.Columns * tileset.TileSize
 	tsh := tileset.Rows * tileset.TileSize
 
-	// Draw the tilemap onto the buffer using the palette
+	// // Draw the tilemap onto the buffer using the palette
 	op := &ebiten.DrawImageOptions{}
-	for i := 0; i < len(tilemap.Data); i++ {
-		tileID := tilemap.Data[i]
-		if tileID < 0 {
-			continue
+	for y := 0; y < tilemap.Rows; y++ {
+		for x := 0; x < tilemap.Columns; x++ {
+			i := y*tilemap.Columns + x
+
+			if i >= len(tilemap.Data) || tilemap.Data[i] < 0 {
+				continue
+			}
+
+			sx := (tilemap.Data[i] % tileset.Columns) * tileset.TileSize
+			sy := (tilemap.Data[i] / tileset.Columns) * tileset.TileSize
+
+			if sx+tileset.TileSize > tsw || sy+tileset.TileSize > tsh {
+				continue
+			}
+
+			op.GeoM.Reset()
+			op.GeoM.Translate(float64(x*tileset.TileSize), float64(y*tileset.TileSize))
+			buffer.DrawImage(palette.SubImage(image.Rect(sx, sy, sx+tileset.TileSize, sy+tileset.TileSize)).(*ebiten.Image), op)
 		}
-
-		sx := (tileID % tileset.Columns) * tileset.TileSize
-		sy := (tileID / tileset.Columns) * tileset.TileSize
-
-		if sx+tileset.TileSize > tsw || sy+tileset.TileSize > tsh {
-			continue
-		}
-
-		tx := (i % tilemap.Columns) * tileset.TileSize
-		ty := (i / tilemap.Columns) * tileset.TileSize
-
-		op.GeoM.Reset()
-		op.GeoM.Translate(float64(tx), float64(ty))
-		buffer.DrawImage(palette.SubImage(image.Rect(sx, sy, sx+tileset.TileSize, sy+tileset.TileSize)).(*ebiten.Image), op)
 	}
 
 	tilemap.IsDirty = false

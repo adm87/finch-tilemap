@@ -57,6 +57,7 @@ func (c *TilemapCache) Allocate(key string, data []byte) error {
 		linq.Fill(tilemap.Data, -1)
 	}
 
+	tilemap.IsDirty = true
 	return nil
 }
 
