@@ -41,6 +41,7 @@ func (t *Tilemap) Fill(tile int) {
 	t.data = make([]int, t.Rows*t.Columns)
 	for i := range t.data {
 		t.data[i] = tile
+		t.dirtyTiles.AddUnique(i)
 	}
 }
 
@@ -58,7 +59,7 @@ func (t *Tilemap) SetTile(x, y, tile int) {
 		return
 	}
 	t.data[i] = tile
-	t.dirtyTiles.Add(i)
+	t.dirtyTiles.AddUnique(i)
 }
 
 func (t *Tilemap) ClearDirtyTiles() {
