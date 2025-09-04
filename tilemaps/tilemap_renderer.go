@@ -27,7 +27,7 @@ func TilemapRenderer(world *ecs.World, entity ecs.Entity) (rendering.RenderingTa
 	}
 
 	tilemapBuffer, exists := get_tilemap_buffer(tilemapComp.TilemapID)
-	if !exists || tilemap.IsDirty {
+	if !exists || tilemap.IsDirty() {
 		tileset, err := tilesets.Cache().Get(tilemap.TilesetID)
 		if err != nil {
 			return nil, 0, err
@@ -64,14 +64,10 @@ func draw_tilemap(buffer *ebiten.Image, palette *ebiten.Image, tilemap *Tilemap,
 	op := &ebiten.DrawImageOptions{}
 	for y := 0; y < tilemap.Rows; y++ {
 		for x := 0; x < tilemap.Columns; x++ {
-			i := y*tilemap.Columns + x
+			tile := tilemap.GetTile(x, y)
 
-			if i >= len(tilemap.Data) || tilemap.Data[i] < 0 {
-				continue
-			}
-
-			sx := (tilemap.Data[i] % tileset.Columns) * tileset.TileSize
-			sy := (tilemap.Data[i] / tileset.Columns) * tileset.TileSize
+			sx := (tile % tileset.Columns) * tileset.TileSize
+			sy := (tile / tileset.Columns) * tileset.TileSize
 
 			if sx+tileset.TileSize > tsw || sy+tileset.TileSize > tsh {
 				continue
@@ -83,6 +79,6 @@ func draw_tilemap(buffer *ebiten.Image, palette *ebiten.Image, tilemap *Tilemap,
 		}
 	}
 
-	tilemap.IsDirty = false
+	tilemap.ClearDirtyTiles()
 	return nil
 }

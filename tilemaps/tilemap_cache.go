@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"sync"
 
-	"github.com/adm87/finch-core/linq"
 	"github.com/adm87/finch-core/types"
 	"github.com/adm87/finch-resources/storage"
 )
@@ -52,12 +51,10 @@ func (c *TilemapCache) Allocate(key string, data []byte) error {
 		return err
 	}
 
-	if len(tilemap.Data) == 0 {
-		tilemap.Data = make([]int, tilemap.Rows*tilemap.Columns)
-		linq.Fill(tilemap.Data, -1)
+	if tilemap.Size() == 0 {
+		tilemap.Fill(-1)
 	}
 
-	tilemap.IsDirty = true
 	return nil
 }
 
