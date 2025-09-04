@@ -5,12 +5,12 @@ import (
 	"github.com/adm87/finch-tilemap/tilemaps"
 	"github.com/adm87/finch-tilemap/tilesets"
 
-	rendering "github.com/adm87/finch-rendering/rendering"
-	resources "github.com/adm87/finch-resources/storage"
+	"github.com/adm87/finch-rendering/rendering"
+	"github.com/adm87/finch-resources/storage"
 )
 
 func RegisterModule() error {
-	if err := resources.RegisterCache(
+	if err := storage.RegisterCache(
 		tilemaps.Cache(),
 		tilesets.Cache(),
 	); err != nil {
