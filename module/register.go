@@ -10,9 +10,9 @@ import (
 )
 
 func RegisterModule() error {
-	if err := storage.RegisterCache(
-		tilemaps.Cache(),
-		tilesets.Cache(),
+	if err := storage.RegisterStorageSystems(
+		tilemaps.Storage(),
+		tilesets.Storage(),
 	); err != nil {
 		return err
 	}

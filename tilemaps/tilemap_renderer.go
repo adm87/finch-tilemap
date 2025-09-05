@@ -21,21 +21,21 @@ func TilemapRenderer(world *ecs.World, entity ecs.Entity) (rendering.RenderingTa
 		return nil, 0, nil
 	}
 
-	tilemap, err := Cache().Get(tilemapComp.TilemapID)
+	tilemap, err := Storage().Get(tilemapComp.TilemapID)
 	if err != nil {
 		return nil, 0, err
 	}
 
 	tilemapBuffer, exists := get_tilemap_buffer(tilemapComp.TilemapID)
 	if !exists || tilemap.IsDirty() {
-		tileset, err := tilesets.Cache().Get(tilemap.TilesetID)
+		tileset, err := tilesets.Storage().Get(tilemap.TilesetID)
 		if err != nil {
 			return nil, 0, err
 		}
 		if !exists {
 			tilemapBuffer = new_tilemap_buffer(tilemapComp.TilemapID, tilemap.Columns*tileset.TileSize, tilemap.Rows*tileset.TileSize)
 		}
-		tilesetImg, err := images.Cache().Get(tileset.ImageID)
+		tilesetImg, err := images.Storage().Get(tileset.ImageID)
 		if err != nil {
 			return nil, 0, err
 		}
