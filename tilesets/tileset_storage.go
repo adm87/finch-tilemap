@@ -85,3 +85,11 @@ func (c *TilesetStorage) AssetTypes() types.HashSet[string] {
 func (c *TilesetStorage) SetDefault(key string) error {
 	return nil
 }
+
+func (t *TilesetStorage) Has(key string) bool {
+	t.mu.RLock()
+	defer t.mu.RUnlock()
+
+	exists, _ := t.store.Has(key)
+	return exists
+}

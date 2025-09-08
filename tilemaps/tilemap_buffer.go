@@ -1,28 +1,34 @@
 package tilemaps
 
-import "github.com/hajimehoshi/ebiten/v2"
-
-var tilemapBuffers = make(map[string]*ebiten.Image)
+import (
+	"github.com/adm87/finch-resources/images"
+	"github.com/hajimehoshi/ebiten/v2"
+)
 
 func new_tilemap_buffer(tilemapID string, width, height int) *ebiten.Image {
-	if buffer, exists := tilemapBuffers[tilemapID]; exists {
-		return buffer
+	if images.Storage().Has(tilemapID) {
+		img, _ := images.Storage().Get(tilemapID)
+		return img
 	}
-	buffer := ebiten.NewImage(width, height)
-	tilemapBuffers[tilemapID] = buffer
-	return buffer
+
+	img := ebiten.NewImage(width, height)
+	if err := images.Storage().PutValue(tilemapID, img); err != nil {
+		panic(err)
+	}
+	return img
 }
 
 func get_tilemap_buffer(tilemapID string) (*ebiten.Image, bool) {
-	buffer, exists := tilemapBuffers[tilemapID]
-	return buffer, exists
+	if images.Storage().Has(tilemapID) {
+		img, _ := images.Storage().Get(tilemapID)
+		return img, true
+	}
+	return nil, false
 }
 
 func delete_tilemap_buffer(tilemapID string) {
-	buffer, exists := tilemapBuffers[tilemapID]
-	if !exists {
+	if !images.Storage().Has(tilemapID) {
 		return
 	}
-	buffer.Deallocate()
-	delete(tilemapBuffers, tilemapID)
+	images.Storage().Deallocate(tilemapID)
 }

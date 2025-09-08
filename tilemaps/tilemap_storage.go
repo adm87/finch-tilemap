@@ -89,3 +89,11 @@ func (c *TilemapStorage) AssetTypes() types.HashSet[string] {
 func (c *TilemapStorage) SetDefault(key string) error {
 	return nil
 }
+
+func (c *TilemapStorage) Has(key string) bool {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+
+	exists, _ := c.store.Has(key)
+	return exists
+}
