@@ -55,7 +55,7 @@ func (c *TilesetStorage) Allocate(key string, data []byte) error {
 	return nil
 }
 
-func (c *TilesetStorage) PutValue(key string, value any) error {
+func (c *TilesetStorage) Put(key string, value any) error {
 	tileset, ok := value.(*Tileset)
 	if !ok {
 		return errors.NewInvalidArgumentError("value must be of type *Tileset")
@@ -64,7 +64,7 @@ func (c *TilesetStorage) PutValue(key string, value any) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	if err := c.store.Add(key, tileset); err != nil {
+	if err := c.store.Set(key, tileset); err != nil {
 		return err
 	}
 
@@ -83,7 +83,27 @@ func (c *TilesetStorage) AssetTypes() types.HashSet[string] {
 }
 
 func (c *TilesetStorage) SetDefault(key string) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	has, err := c.store.Has(key)
+	if err != nil {
+		return err
+	}
+
+	if !has {
+		return errors.NewNotFoundError("default tileset not found in storage: " + key)
+	}
+
+	c.store.SetDefault(key)
 	return nil
+}
+
+func (c *TilesetStorage) DefaultKey() string {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+
+	return c.store.Default()
 }
 
 func (t *TilesetStorage) Has(key string) bool {

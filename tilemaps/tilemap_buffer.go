@@ -12,7 +12,7 @@ func new_tilemap_buffer(tilemapID string, width, height int) *ebiten.Image {
 	}
 
 	img := ebiten.NewImage(width, height)
-	if err := images.Storage().PutValue(tilemapID, img); err != nil {
+	if err := images.Storage().Put(tilemapID, img); err != nil {
 		panic(err)
 	}
 	return img

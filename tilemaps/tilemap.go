@@ -17,7 +17,7 @@ type Tilemap struct {
 	TilesetID string `json:"tileset_id"`
 }
 
-func NewTileMap(rows, columns int, tilesetID string) *Tilemap {
+func NewTilemap(rows, columns int, tilesetID string) *Tilemap {
 	t := &Tilemap{
 		data:       make([]int, rows*columns),
 		dirtyTiles: make(types.HashSet[int]),

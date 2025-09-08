@@ -59,7 +59,7 @@ func (c *TilemapStorage) Allocate(key string, data []byte) error {
 	return nil
 }
 
-func (c *TilemapStorage) PutValue(key string, value any) error {
+func (c *TilemapStorage) Put(key string, value any) error {
 	tilemap, ok := value.(*Tilemap)
 	if !ok {
 		return errors.NewInvalidArgumentError("value must be of type *Tilemap")
@@ -68,7 +68,7 @@ func (c *TilemapStorage) PutValue(key string, value any) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	if err := c.store.Add(key, tilemap); err != nil {
+	if err := c.store.Set(key, tilemap); err != nil {
 		return err
 	}
 
@@ -87,7 +87,26 @@ func (c *TilemapStorage) AssetTypes() types.HashSet[string] {
 }
 
 func (c *TilemapStorage) SetDefault(key string) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	has, err := c.store.Has(key)
+	if err != nil {
+		return err
+	}
+
+	if !has {
+		return errors.NewNotFoundError("default tilemap not found in storage: " + key)
+	}
+
+	c.store.SetDefault(key)
 	return nil
+}
+
+func (c *TilemapStorage) DefaultKey() string {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	return c.store.Default()
 }
 
 func (c *TilemapStorage) Has(key string) bool {
